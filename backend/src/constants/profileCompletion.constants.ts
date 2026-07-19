@@ -1,0 +1,23 @@
+export const PROFILE_COMPLETION = {
+  BASIC_PROFILE: 20,
+
+  EDUCATION: 20,
+
+  EXPERIENCE: 20,
+
+  SKILLS: 15,
+
+  PROJECTS: 15,
+
+  CERTIFICATES: 10,
+} as const;
+
+export const BASIC_PROFILE_FIELDS = {
+  HEADLINE: 5,
+
+  BIO: 5,
+
+  RESUME: 5,
+
+  EXPERIENCE: 5,
+} as const;
