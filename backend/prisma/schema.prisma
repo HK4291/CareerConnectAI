@@ -235,7 +235,7 @@ model Interview {
 }
 
 model Resume {
-  id               String           @id @default(cuid())
+  id               String            @id @default(cuid())
   candidateId      String
   originalFileName String
   fileName         String
@@ -243,14 +243,17 @@ model Resume {
   fileSize         Int
   storageProvider  StorageProvider
   storagePath      String
-  syncStatus       ResumeSyncStatus @default(SYNCED)
-  retryCount       Int              @default(0)
-  isActive         Boolean          @default(true)
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  syncStatus       ResumeSyncStatus  @default(SYNCED)
+  retryCount       Int               @default(0)
+  isActive         Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  parsedData       Json?
+  parseStatus      ResumeParseStatus @default(PENDING)
+  rawText          String?
   analysis         ResumeAnalysis?
   versions         ResumeVersion[]
-  candidate        Candidate        @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  candidate        Candidate         @relation(fields: [candidateId], references: [id], onDelete: Cascade)
 
   @@index([candidateId])
   @@map("resumes")
@@ -713,10 +716,17 @@ enum EmploymentType {
 enum StorageProvider {
   LOCAL
   S3
+  CLOUDINARY
 }
 
 enum ResumeSyncStatus {
   SYNCED
   PENDING
+  FAILED
+}
+
+enum ResumeParseStatus {
+  PENDING
+  SUCCESS
   FAILED
 }

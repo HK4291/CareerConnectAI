@@ -4,6 +4,8 @@ import { prisma } from "../config/prisma";
 import { CreateCandidateDto, UpdateCandidateDto } from "../dto/candidate.dto";
 import { ICandidateRepository } from "../interfaces/candidate.interface";
 
+type PrismaExecutor = Prisma.TransactionClient;
+
 class CandidateRepository implements ICandidateRepository {
   /**
    * Create Candidate Profile
@@ -139,7 +141,12 @@ class CandidateRepository implements ICandidateRepository {
   /**
    * Update Resume URL
    */
-  async updateResume(userId: string, resumeUrl: string): Promise<Candidate> {
+  async updateResume(
+    userId: string,
+    resumeUrl: string,
+    tx?: PrismaExecutor,
+  ): Promise<Candidate> {
+    const db = tx ?? prisma;
     return prisma.candidate.update({
       where: {
         userId,

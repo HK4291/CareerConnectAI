@@ -50,7 +50,7 @@ export class CloudinaryStorageProvider implements IStorageProvider {
     });
   }
 
-  public async exists(): Promise<boolean> {
+  public async exists(storagePath: string): Promise<boolean> {
     // Cloudinary me direct lightweight exists check nahi hai.
     return true;
   }

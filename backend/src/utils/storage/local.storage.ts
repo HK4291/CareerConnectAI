@@ -7,6 +7,7 @@ import { env } from "../../config/env";
 
 import {
   IStorageProvider,
+  UploadOptions,
   UploadResult,
 } from "./storage.provider";
 
@@ -19,6 +20,7 @@ export class LocalStorageProvider implements IStorageProvider {
 
   public async upload(
     file: Express.Multer.File,
+    options?: UploadOptions,
   ): Promise<UploadResult> {
     await fs.mkdir(this.uploadDirectory, { recursive: true });
 
