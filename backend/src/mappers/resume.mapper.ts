@@ -4,26 +4,29 @@ import { ParsedResume } from "../types/parsed-resume";
 
 export class ResumeMapper {
   static toParsedData(parsedResume: ParsedResume): Prisma.InputJsonValue {
-    return {
-      rawText: parsedResume.rawText,
+    // Ensure the returned value is a plain JSON value compatible with Prisma.InputJsonValue
+    return JSON.parse(
+      JSON.stringify({
+        rawText: parsedResume.rawText,
 
-      personal: parsedResume.personal,
+        personal: parsedResume.personal,
 
-      summary: parsedResume.summary ?? null,
+        summary: parsedResume.summary ?? null,
 
-      skills: parsedResume.skills,
+        skills: parsedResume.skills,
 
-      education: parsedResume.education,
+        education: parsedResume.education,
 
-      experience: parsedResume.experience,
+        experience: parsedResume.experience,
 
-      projects: parsedResume.projects,
+        projects: parsedResume.projects,
 
-      certifications: parsedResume.certifications,
+        certifications: parsedResume.certifications,
 
-      languages: parsedResume.languages,
+        languages: parsedResume.languages,
 
-      achievements: parsedResume.achievements,
-    };
+        achievements: parsedResume.achievements,
+      }),
+    ) as Prisma.InputJsonValue;
   }
 }

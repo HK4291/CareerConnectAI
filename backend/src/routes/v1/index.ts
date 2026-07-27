@@ -8,6 +8,7 @@ import skillRoutes from "./skills.route";
 import projectRoutes from "./project.routes";
 import certificateRoutes from "./certificate.routes";
 import resumeRoutes from "./resume.routes";
+import atsRoutes from "./ats.routes";
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use("/skills", skillRoutes);
 router.use("/projects", projectRoutes);
 router.use("/certificate", certificateRoutes);
 router.use("/resumes", resumeRoutes);
+router.use("/ats", atsRoutes);
 
 export default router;

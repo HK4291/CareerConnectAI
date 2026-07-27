@@ -36,56 +36,51 @@ class OpenAIService {
     try {
       logger.info(
         {
+          provider: "openai",
           model: this.model,
           characters: userPrompt.length,
         },
         "OpenAI request started",
       );
 
-      const response = await this.client.responses.create(
-        {
-          model: this.model,
+      const response = await this.client.chat.completions.create({
+        model: this.model,
 
-          input: [
-            {
-              role: "system",
-              content: [
-                {
-                  type: "input_text",
-                  text: systemPrompt,
-                },
-              ],
-            },
-            {
-              role: "user",
-              content: [
-                {
-                  type: "input_text",
-                  text: userPrompt,
-                },
-              ],
-            },
-          ],
-        },
-        {
-          timeout: 30000,
-        },
-      );
+        temperature: 0.2,
 
-      const output = response.output_text?.trim();
+        messages: [
+          {
+            role: "system",
+            content: systemPrompt,
+          },
+          {
+            role: "user",
+            content: userPrompt,
+          },
+        ],
+      });
+
+      const output = response.choices?.[0]?.message?.content?.trim();
 
       if (!output) {
         throw new ApiError(502, "OpenAI returned an empty response.");
       }
 
+      const cleanedOutput = output
+        .replace(/^```json\s*/i, "")
+        .replace(/^```\s*/i, "")
+        .replace(/\s*```$/i, "")
+        .trim();
+
       let parsed: T;
 
       try {
-        parsed = JSON.parse(output) as T;
+        parsed = JSON.parse(cleanedOutput) as T;
       } catch {
         logger.error(
           {
-            output,
+            provider: "openai",
+            output: cleanedOutput,
           },
           "Invalid JSON received from OpenAI",
         );
@@ -95,6 +90,7 @@ class OpenAIService {
 
       logger.info(
         {
+          provider: "openai",
           model: this.model,
           duration: `${Date.now() - startedAt} ms`,
           usage: response.usage,
@@ -106,6 +102,7 @@ class OpenAIService {
     } catch (error: any) {
       logger.error(
         {
+          provider: "openai",
           model: this.model,
           duration: `${Date.now() - startedAt} ms`,
           error,

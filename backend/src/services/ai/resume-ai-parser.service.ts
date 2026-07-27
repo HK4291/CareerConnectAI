@@ -4,7 +4,8 @@ import { ParsedResume } from "../../types/parsed-resume";
 
 import { parsedResumeSchema } from "../../schemas/parsed-resume.schema";
 
-import { openAIService } from "./openai.service";
+import logger from "../../utils/logger";
+import { nvidiaAIService } from "./nvidia-ai.service";
 
 class ResumeAIParserService {
   private readonly systemPrompt = `
@@ -91,7 +92,7 @@ Return JSON in the following schema:
       throw new ApiError(400, "Resume text is empty.");
     }
 
-    const aiResponse = await openAIService.generateJson<
+    const aiResponse = await nvidiaAIService.generateJson<
       Omit<ParsedResume, "rawText">
     >(this.systemPrompt, rawText);
 
@@ -101,7 +102,19 @@ Return JSON in the following schema:
     });
 
     if (!validation.success) {
-      throw new ApiError(500, "OpenAI returned an invalid resume structure.");
+      logger.error(
+        {
+          provider: "nvidia",
+          issues: validation.error.issues,
+          responseKeys:
+            aiResponse && typeof aiResponse === "object"
+              ? Object.keys(aiResponse)
+              : [],
+        },
+        "Invalid resume structure received from NVIDIA AI",
+      );
+
+      throw new ApiError(500, "NVIDIA returned an invalid resume structure.");
     }
 
     return validation.data;
