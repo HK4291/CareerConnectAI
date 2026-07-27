@@ -31,6 +31,7 @@ export const registerSchema = z.object({
     .optional(),
 
   role: z.nativeEnum(Role).optional(),
+  companyId: z.string().optional(),
 });
 
 export const loginSchema = z.object({

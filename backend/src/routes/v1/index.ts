@@ -9,12 +9,15 @@ import projectRoutes from "./project.routes";
 import certificateRoutes from "./certificate.routes";
 import resumeRoutes from "./resume.routes";
 import atsRoutes from "./ats.routes";
+import jobRoutes from "./job.routes";
+import recruiterRoutes from "./recruiter.routes";
 
 const router = Router();
 
 router.use("/health", healthRoutes);
 router.use("/auth", authRoutes);
 router.use("/candidate", candidateRoutes);
+router.use("/recruiters", recruiterRoutes);
 router.use("/education", educationRoutes);
 router.use("/experience", experienceRoutes);
 router.use("/skills", skillRoutes);
@@ -22,5 +25,6 @@ router.use("/projects", projectRoutes);
 router.use("/certificate", certificateRoutes);
 router.use("/resumes", resumeRoutes);
 router.use("/ats", atsRoutes);
+router.use("/jobs", jobRoutes);
 
 export default router;

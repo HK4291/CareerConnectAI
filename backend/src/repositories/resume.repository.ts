@@ -1,4 +1,8 @@
-import { Resume, ResumeSyncStatus, ResumeParseStatus } from "@prisma/client";
+import {
+  ResumeSyncStatus,
+  ResumeParseStatus,
+  StorageProvider,
+} from "@prisma/client";
 import { Prisma } from "@prisma/client";
 
 type PrismaExecutor = Prisma.TransactionClient | typeof prisma;
@@ -16,13 +20,13 @@ class ResumeRepository {
       fileName: string;
       mimeType: string;
       fileSize: number;
-      storageProvider: any;
+      storageProvider: StorageProvider;
       storagePath: string;
       syncStatus: ResumeSyncStatus;
 
       rawText?: string | null;
 
-      parsedData?: Prisma.InputJsonValue | null;
+      parsedData?: Prisma.InputJsonValue | Prisma.NullableJsonNullValueInput;
 
       parseStatus?: ResumeParseStatus;
     },
