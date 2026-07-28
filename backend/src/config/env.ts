@@ -57,6 +57,20 @@ const envSchema = z.object({
   MAIL_FROM_EMAIL: z.string().email(),
 
   CLIENT_URL: z.string().url(),
+
+  OPENAI_API_KEY: z.string().trim().min(1),
+
+  OPENAI_MODEL: z.string().trim().min(1).default("gpt-5-mini"),
+
+  NVIDIA_API_KEY: z.string().trim().min(1),
+
+  NVIDIA_MODEL: z
+    .string()
+    .trim()
+    .min(1)
+    .default("openai/gpt-oss-120b"),
+
+  NVIDIA_REQUEST_TIMEOUT_MS: z.coerce.number().positive().default(120000),
 });
 
 const parsed = envSchema.safeParse(process.env);

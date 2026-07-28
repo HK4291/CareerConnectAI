@@ -6,6 +6,7 @@ export interface RegisterDto {
   password: string;
   phone?: string;
   role?: Role;
+  companyId?: string;
 }
 
 export interface VerifyEmailDto {

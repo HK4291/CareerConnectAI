@@ -9,11 +9,12 @@ import { OTPPurpose } from "@prisma/client";
 import { EmailTemplates } from "../email/email.template";
 import { emailService } from "../email/email.service";
 import { EmailSubject } from "../../constants/email.constants";
+import { recruiterService } from "../recruiter/recruiter.service";
 
 export class RegisterService {
   async execute(data: RegisterDto) {
     const existingUser = await authRepository.findUserByEmail(data.email);
-
+    console.log(data);
     if (existingUser) {
       throw new ApiError(409, "Email already registered");
     }
@@ -28,8 +29,19 @@ export class RegisterService {
       role: data.role ?? Role.CANDIDATE,
     });
 
-    if (user.role === Role.CANDIDATE) {
-      await authRepository.createCandidate(user.id);
+    switch (user.role) {
+      case Role.CANDIDATE:
+        await authRepository.createCandidate(user.id);
+        break;
+
+      case Role.RECRUITER:
+        await recruiterService.createProfile(user.id, {
+          companyId: data.companyId as string,
+        });
+        break;
+
+      case Role.ADMIN:
+        break;
     }
 
     const otp = crypto.randomInt(100000, 999999).toString();

@@ -1,20 +1,27 @@
-import { SkillLevel } from "@prisma/client";
+import { Prisma, SkillLevel, SkillImportance } from "@prisma/client";
 
 import { prisma } from "../config/prisma";
 
 class SkillRepository {
-  async findSkillByName(name: string) {
-    return prisma.skill.findUnique({
+  async findSkillByName(name: string, tx: Prisma.TransactionClient = prisma) {
+    return tx.skill.findFirst({
       where: {
-        name,
+        name: {
+          equals: name.trim(),
+          mode: "insensitive",
+        },
       },
     });
   }
 
-  async createSkill(name: string, category?: string) {
-    return prisma.skill.create({
+  async createSkill(
+    name: string,
+    category?: string,
+    tx: Prisma.TransactionClient = prisma,
+  ) {
+    return tx.skill.create({
       data: {
-        name,
+        name: name.trim(),
         category,
       },
     });
@@ -117,6 +124,21 @@ class SkillRepository {
       where: {
         candidateId,
       },
+    });
+  }
+
+  // job skills
+  async createJobSkills(
+    data: {
+      jobId: string;
+      skillId: string;
+      importance?: SkillImportance;
+    }[],
+    tx: Prisma.TransactionClient = prisma,
+  ) {
+    return tx.jobSkill.createMany({
+      data,
+      skipDuplicates: true,
     });
   }
 }

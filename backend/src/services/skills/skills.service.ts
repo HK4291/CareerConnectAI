@@ -1,4 +1,5 @@
 import { CandidateSkill } from "@prisma/client";
+import { prisma } from "../../config/prisma";
 
 import ApiError from "../../utils/ApiError";
 
@@ -25,29 +26,31 @@ class SkillService implements ISkillService {
       throw new ApiError(404, "Candidate profile not found.");
     }
 
-    let skill = await skillRepository.findSkillByName(data.name);
+    const candidateSkill = await prisma.$transaction(async (tx) => {
+      let skill = await skillRepository.findSkillByName(data.name, tx);
 
-    if (!skill) {
-      skill = await skillRepository.createSkill(data.name, data.category);
-    }
+      if (!skill) {
+        skill = await skillRepository.createSkill(data.name, data.category, tx);
+      }
 
-    const alreadyExists = await skillRepository.candidateAlreadyHasSkill(
-      candidate.id,
-      skill.id,
-    );
+      const alreadyExists = await skillRepository.candidateAlreadyHasSkill(
+        candidate.id,
+        skill.id,
+      );
 
-    if (alreadyExists) {
-      throw new ApiError(409, "Candidate already has this skill.");
-    }
+      if (alreadyExists) {
+        throw new ApiError(409, "Candidate already has this skill.");
+      }
 
-    const skillData = {
-      candidateId: candidate.id,
-      skillId: skill.id,
-      level: data.level,
-      experienceYears: data.experienceYears,
-    };
+      const skillData = {
+        candidateId: candidate.id,
+        skillId: skill.id,
+        level: data.level,
+        experienceYears: data.experienceYears,
+      };
 
-    const candidateSkill = await skillRepository.addCandidateSkill(skillData);
+      return skillRepository.addCandidateSkill(skillData);
+    });
 
     await profileCompletionService.updateProfileCompletion(candidate.id);
 
