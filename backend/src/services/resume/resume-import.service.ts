@@ -253,7 +253,7 @@ class ResumeImportService {
         where: {
           candidateId,
           company: experience.company,
-          position: experience.position,
+          designation: experience.position,
         },
       });
 
