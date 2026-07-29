@@ -8,7 +8,7 @@ import { recruiterRepository } from "../../repositories/recruiter.repository";
 import { jobRepository } from "../../repositories/job.repository";
 import { skillRepository } from "../../repositories/skills.repository";
 
-import { CreateJobDto, UpdateJobDto } from "../../dto/job.dto";
+import { CreateJobDto, UpdateJobDto, JobSearchDto } from "../../dto/job.dto";
 
 class JobService {
   /**
@@ -320,6 +320,29 @@ class JobService {
     await jobRepository.delete(job.id);
 
     return null;
+  }
+
+  /**
+   * Search Jobs
+   */
+  async searchJobs(filters: JobSearchDto) {
+    const jobs = await jobRepository.searchJobs(filters);
+
+    const total = await jobRepository.countSearchJobs(filters);
+
+    const page = filters.page ?? 1;
+    const limit = filters.limit ?? 10;
+
+    return {
+      jobs,
+
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 }
 
