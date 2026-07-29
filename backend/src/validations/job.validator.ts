@@ -87,3 +87,70 @@ export const updateJobSchema = jobSchema
     message: "Deadline must be a future date.",
     path: ["deadline"],
   });
+
+export const jobSearchSchema = z
+  .object({
+    search: z.string().trim().optional(),
+
+    location: z.string().trim().optional(),
+
+    employmentType: z.nativeEnum(EmploymentType).optional(),
+
+    experienceLevel: z.nativeEnum(ExperienceLevel).optional(),
+
+    salaryMin: z.coerce
+      .number()
+      .positive("Minimum salary must be greater than 0.")
+      .optional(),
+
+    salaryMax: z.coerce
+      .number()
+      .positive("Maximum salary must be greater than 0.")
+      .optional(),
+
+    page: z.coerce.number().int().min(1).default(1),
+
+    limit: z.coerce.number().int().min(1).max(100).default(10),
+
+    sort: z
+      .enum(["newest", "oldest", "salaryAsc", "salaryDesc"])
+      .default("newest"),
+  })
+  .refine(
+    (data) =>
+      !data.salaryMin || !data.salaryMax || data.salaryMin <= data.salaryMax,
+    {
+      message: "Minimum salary cannot be greater than maximum salary.",
+      path: ["salaryMin"],
+    },
+  );
+
+export const savedJobQuerySchema = z.object({
+  page: z.coerce
+    .number()
+    .int()
+    .min(1, "Page must be greater than or equal to 1.")
+    .default(1),
+
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1, "Limit must be greater than or equal to 1.")
+    .max(100, "Limit cannot exceed 100.")
+    .default(10),
+});
+
+const paginationSchema = {
+  page: z.coerce
+    .number()
+    .int()
+    .min(1, "Page must be greater than or equal to 1.")
+    .default(1),
+
+  limit: z.coerce
+    .number()
+    .int()
+    .min(1, "Limit must be greater than or equal to 1.")
+    .max(100, "Limit cannot exceed 100.")
+    .default(10),
+};

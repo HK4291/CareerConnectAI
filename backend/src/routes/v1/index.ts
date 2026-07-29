@@ -11,6 +11,7 @@ import resumeRoutes from "./resume.routes";
 import atsRoutes from "./ats.routes";
 import jobRoutes from "./job.routes";
 import recruiterRoutes from "./recruiter.routes";
+import applicationRoutes from "./application.routes"
 
 const router = Router();
 
@@ -26,5 +27,6 @@ router.use("/certificate", certificateRoutes);
 router.use("/resumes", resumeRoutes);
 router.use("/ats", atsRoutes);
 router.use("/jobs", jobRoutes);
+router.use("/application", applicationRoutes);
 
 export default router;

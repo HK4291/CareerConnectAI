@@ -47,3 +47,28 @@ export interface UpdateJobDto {
 
   skills?: CreateJobSkillDto[];
 }
+
+export interface JobSearchDto {
+  search?: string;
+
+  location?: string;
+
+  employmentType?: EmploymentType;
+
+  experienceLevel?: ExperienceLevel;
+
+  salaryMin?: number;
+
+  salaryMax?: number;
+
+  page?: number;
+
+  limit?: number;
+
+  sort?: "newest" | "oldest" | "salaryAsc" | "salaryDesc";
+}
+
+export interface SavedJobQueryDto {
+  page?: number;
+  limit?: number;
+}

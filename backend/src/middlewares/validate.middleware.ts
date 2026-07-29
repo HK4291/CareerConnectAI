@@ -1,23 +1,33 @@
 import { NextFunction, Request, Response } from "express";
-import { ZodSchema, ZodError } from "zod";
+import { ZodError, ZodSchema } from "zod";
 
 import ApiError from "../utils/ApiError";
 
+type ValidationTarget = "body" | "query" | "params";
+
 export const validate =
-  <T>(schema: ZodSchema<T>) =>
+  <T>(schema: ZodSchema<T>, target: ValidationTarget = "body") =>
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      req.body = await schema.parseAsync(req.body);
+      const parsed = await schema.parseAsync(req[target]);
+
+      if (target === "body") {
+        req.body = parsed;
+      } else {
+        Object.assign(req[target], parsed);
+      }
+
       next();
     } catch (error) {
       if (error instanceof ZodError) {
-        const apiError = new ApiError(
-          400,
-          "Validation failed",
-          true,
-          error.flatten().fieldErrors,
+        return next(
+          new ApiError(
+            400,
+            "Validation failed",
+            true,
+            error.flatten().fieldErrors,
+          ),
         );
-        return next(apiError);
       }
 
       next(error);
